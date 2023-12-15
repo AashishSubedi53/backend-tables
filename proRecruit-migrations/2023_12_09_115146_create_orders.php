@@ -1,0 +1,54 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('orders', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('professional_id');
+            $table->unsignedBigInteger('admin_id');
+            $table->longText('details');
+            $table->enum('order_status', ['Pending', 'In Progress', 'Completed'])->default('Pending');
+            // $pendingOrders = YourModel::Order('order_status', 'Pending')->get();
+
+            $table->string('booking_date');
+            $table->string('booking_time');
+            $table->date('order_date');
+            $table->double('total_amount');
+            $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('professional_id')->references('id')->on('professionals')->onDelete('cascade');
+            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
+            $table->dropColumn('customer_id');
+
+            $table->dropForeign(['professional_id']);
+            $table->dropColumn('professional_id');
+
+            $table->dropForeign(['admin_id']);
+            $table->dropColumn('admin_id');
+        });
+    
+        Schema::dropIfExists('orders');
+    }
+
+};
